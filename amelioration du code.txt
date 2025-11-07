@@ -1,0 +1,50 @@
+
+----------------------------------------------------------------
+Avec les clés de test suivantes, vous n'obtiendrez toujours aucun CAPTCHA et tout les demandes de vérification seront acceptées.
+Clé du site : 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+Clé secrète : 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+
+Le widget reCAPTCHA affichera un message d'avertissement pour affirmer qu'il est uniquement à des fins de test. 
+Veuillez ne pas utiliser ces clés pour votre trafic de production.
+----------------------------------------------------------------
+ <!-- Google Analytics 4 (GA4) Tracking Code -->
+ <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+ <script>
+   window.dataLayer = window.dataLayer || [];
+   function gtag(){dataLayer.push(arguments);}
+   gtag('js', new Date());
+   gtag('config', 'G-XXXXXXXXXX');
+ </script>
+ ----------------------------------------------------------------
+ 
+ 
+ ****************************************************************
+ Utilisez cette clé de site dans le code HTML de votre site destiné aux utilisateurs.
+Clé du site :	6LcAef4rAAAAAHs05H946Mcoid1m_x-yqsMe_iUf
+Utilisez cette clé secrète pour la communication entre votre site et le service reCAPTCHA.
+Clé secrète :	6LcAef4rAAAAAJZ7Ue2PDp4-biTh5arB_rrT_lnP
+
+admin@freelance-addons.net
+****************************************************************
+$host     = "davidia.o2switch.net"; // Database Host
+$user     = "anpa3906_o2switch"; // Database Username
+$password = "Vku8-Ly76-svs)"; // Database's user Password
+$database = "anpa3906_phpblog"; // Database Name
+****************************************************************
+
+
+****************************************************************
+Client OAuth créé
+Vous pouvez toujours accéder à l'ID client depuis l'onglet "Clients" de Google Auth Platform.
+
+L'accès OAuth est réservé aux utilisateurs de test  listés sur votre écran de consentement OAuth
+ID client
+39874386834-7ut9jtu7saibmvo06tkn3ghmqei52rfa.apps.googleusercontent.com
+À partir de juin 2025, vous ne pourrez plus afficher ni télécharger le code secret du client une fois que vous aurez fermé cette boîte de dialogue. Assurez-vous d'avoir copié ou téléchargé les informations ci-dessous et de les avoir stockées en lieu sûr.
+Code secret du client
+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
+Date de création
+4 novembre 2025, 10:02:38 GMT+1
+État
+Activé
+***************************************************************

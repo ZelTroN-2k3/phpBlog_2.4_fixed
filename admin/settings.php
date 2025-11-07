@@ -2,25 +2,29 @@
 include "header.php";
 
 if (isset($_GET['delete_bgrimg'])) {
-	unlink('../' . $settings['background_image']);
-	
-    $settings['background_image'] = '';
-	
-	file_put_contents('../config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
-	echo '<meta http-equiv="refresh" content="0;url=settings.php">';
-}
+    // Supprimer l'ancien fichier s'il existe
+    if ($settings['background_image'] != '' && file_exists('../' . $settings['background_image'])) {
+        unlink('../' . $settings['background_image']);
+    }
 
+    // Mettre à jour la base de données
+    mysqli_query($connect, "UPDATE `settings` SET background_image='' WHERE id=1");
+
+    echo '<meta http-equiv="refresh" content="0;url=settings.php">';
+}
 
 if (isset($_POST['save'])) {
 
-	if (@$_FILES['background_image']['name'] != '') {
+    $image = $settings['background_image']; // Garder l'ancienne image par défaut
+
+    if (@$_FILES['background_image']['name'] != '') {
         $target_dir    = "uploads/other/";
         $target_file   = $target_dir . basename($_FILES["background_image"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        
+
         $uploadOk = 1;
-        
-        // Check if image file is a actual image or fake image
+
+        // ... (Le reste de votre logique de vérification de l'upload reste identique) ...
         $check = getimagesize($_FILES["background_image"]["tmp_name"]);
         if ($check !== false) {
             $uploadOk = 1;
@@ -28,47 +32,78 @@ if (isset($_POST['save'])) {
             echo '<div class="alert alert-danger">The file is not an image.</div>';
             $uploadOk = 0;
         }
-        
-        // Check file size
+
         if ($_FILES["background_image"]["size"] > 2000000) {
             echo '<div class="alert alert-warning">Sorry, the image file size is too large. Limit: 2 MB.</div>';
             $uploadOk = 0;
         }
-        
+
         if ($uploadOk == 1) {
+            // Supprimer l'ancienne image si elle existe et est différente
+            if ($settings['background_image'] != '' && file_exists('../' . $settings['background_image'])) {
+                unlink('../' . $settings['background_image']);
+            }
+
             $string     = "0123456789wsderfgtyhjuk";
             $new_string = str_shuffle($string);
             $location   = "../uploads/other/bgr_$new_string.$imageFileType";
             move_uploaded_file($_FILES["background_image"]["tmp_name"], $location);
             $image = 'uploads/other/bgr_' . $new_string . '.' . $imageFileType . '';
         }
+    } // Fin de la gestion de l'upload
+
+    // Préparer les données pour la BDD
+    $sitename = mysqli_real_escape_string($connect, $_POST['sitename']);
+    $description = mysqli_real_escape_string($connect, $_POST['description']);
+    $email = mysqli_real_escape_string($connect, $_POST['email']);
+    $gcaptcha_sitekey = mysqli_real_escape_string($connect, $_POST['gcaptcha-sitekey']);
+    $gcaptcha_secretkey = mysqli_real_escape_string($connect, $_POST['gcaptcha-secretkey']);
+    $head_customcode = mysqli_real_escape_string($connect, base64_encode($_POST['head-customcode']));
+    $facebook = mysqli_real_escape_string($connect, $_POST['facebook']);
+    $instagram = mysqli_real_escape_string($connect, $_POST['instagram']);
+    $twitter = mysqli_real_escape_string($connect, $_POST['twitter']);
+    $youtube = mysqli_real_escape_string($connect, $_POST['youtube']);
+    $linkedin = mysqli_real_escape_string($connect, $_POST['linkedin']);
+    $comments = mysqli_real_escape_string($connect, $_POST['comments']);
+    $rtl = mysqli_real_escape_string($connect, $_POST['rtl']);
+    $date_format = mysqli_real_escape_string($connect, $_POST['date_format']);
+    $layout = mysqli_real_escape_string($connect, $_POST['layout']);
+    $latestposts_bar = mysqli_real_escape_string($connect, $_POST['latestposts_bar']);
+    $sidebar_position = mysqli_real_escape_string($connect, $_POST['sidebar_position']);
+    $posts_per_row = mysqli_real_escape_string($connect, $_POST['posts_per_row']);
+    $theme = mysqli_real_escape_string($connect, $_POST['theme']);
+    $background_image_db = mysqli_real_escape_string($connect, $image); // $image vient de la logique d'upload
+
+    // Construire la requête UPDATE
+    $sql = "UPDATE `settings` SET 
+                sitename = '$sitename',
+                description = '$description',
+                email = '$email',
+                gcaptcha_sitekey = '$gcaptcha_sitekey',
+                gcaptcha_secretkey = '$gcaptcha_secretkey',
+                head_customcode = '$head_customcode',
+                facebook = '$facebook',
+                instagram = '$instagram',
+                twitter = '$twitter',
+                youtube = '$youtube',
+                linkedin = '$linkedin',
+                comments = '$comments',
+                rtl = '$rtl',
+                date_format = '$date_format',
+                layout = '$layout',
+                latestposts_bar = '$latestposts_bar',
+                sidebar_position = '$sidebar_position',
+                posts_per_row = '$posts_per_row',
+                theme = '$theme',
+                background_image = '$background_image_db'
+            WHERE id = 1";
+
+    // Exécuter la mise à jour
+    if(mysqli_query($connect, $sql)) {
+        echo '<meta http-equiv="refresh" content="0;url=settings.php">';
     } else {
-		$image = $settings['background_image'];	
-	}
-	
-    $settings['sitename'] 			= addslashes($_POST['sitename']);
-    $settings['description']        = addslashes($_POST['description']);
-    $settings['email']              = addslashes($_POST['email']);
-    $settings['gcaptcha_sitekey']   = addslashes($_POST['gcaptcha-sitekey']);
-    $settings['gcaptcha_secretkey'] = addslashes($_POST['gcaptcha-secretkey']);
-	$settings['head_customcode'] 	= base64_encode($_POST['head-customcode']);
-    $settings['facebook']           = addslashes($_POST['facebook']);
-    $settings['instagram']          = addslashes($_POST['instagram']);
-    $settings['twitter']            = addslashes($_POST['twitter']);
-    $settings['youtube']            = addslashes($_POST['youtube']);
-	$settings['linkedin']           = addslashes($_POST['linkedin']);
-    $settings['comments']           = addslashes($_POST['comments']);
-	$settings['rtl']                = addslashes($_POST['rtl']);
-	$settings['date_format']        = addslashes($_POST['date_format']);
-	$settings['layout']             = addslashes($_POST['layout']);
-	$settings['latestposts_bar']    = addslashes($_POST['latestposts_bar']);
-	$settings['sidebar_position']   = addslashes($_POST['sidebar_position']);
-	$settings['posts_per_row']      = addslashes($_POST['posts_per_row']);
-    $settings['theme']              = addslashes($_POST['theme']);
-	$settings['background_image']   = $image;
-	
-	file_put_contents('../config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
-	echo '<meta http-equiv="refresh" content="0;url=settings.php">';
+        echo '<div class="alert alert-danger">Erreur lors de la mise à jour des paramètres : ' . mysqli_error($connect) . '</div>';
+    }
 }
 ?>
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -117,7 +152,7 @@ echo $settings['gcaptcha_secretkey'];
 					</div>
 					<p>
 						<label>Custom code for < head > tag</label>
-						<textarea name="head-customcode" class="form-control" rows="4" placeholder="For example: Google Analytics tracking code can be placed here"><?php
+						<textarea name="head-customcode" class="form-control" rows="8" placeholder="For example: Google Analytics tracking code can be placed here"><?php
 echo base64_decode($settings['head_customcode']);
 ?></textarea>
 					</p>

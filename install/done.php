@@ -1,6 +1,5 @@
 <?php
 include "core.php";
-include "../config_settings.php";
 head();
 
 $database_host     = $_SESSION['database_host'];
@@ -16,12 +15,22 @@ if (isset($_SERVER['HTTPS'])) {
 } else {
     $htp = 'http';
 }
-$fullpath             = "$htp://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$settings['site_url'] = substr($fullpath, 0, strpos($fullpath, '/install'));
-$settings['email']    = $email;
-file_put_contents('../config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 
 @$db = new mysqli($database_host, $database_username, $database_password, $database_name);
+
+// --- Calculer l'URL du site et sécuriser l'email ---
+if (isset($_SERVER['HTTPS'])) {
+    $htp = 'https';
+} else {
+    $htp = 'http';
+}
+$fullpath = "$htp://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$site_url = substr($fullpath, 0, strpos($fullpath, '/install'));
+
+$site_url_safe = mysqli_real_escape_string($db, $site_url);
+$email_safe_settings = mysqli_real_escape_string($db, $email);
+// --- Fin du calcul ---
+
 if ($db) {
     
     //Importing SQL Tables
@@ -56,6 +65,10 @@ if ($db) {
     
     $link  = new mysqli($database_host, $database_username, $database_password, $database_name);
     
+    // --- Mettre à jour site_url et email dans la nouvelle table settings ---
+    mysqli_query($link, "UPDATE `settings` SET site_url='$site_url_safe', email='$email_safe_settings' WHERE id=1");
+    // --- Fin de la mise à jour ---
+
     // --- MODIFICATION DE SÉCURITÉ ---
     // Échapper les variables avant de les insérer dans la requête SQL
     $username_safe = mysqli_real_escape_string($link, $username);
@@ -80,6 +93,19 @@ if ($db) {
 	<div class="alert alert-success">
 		<i class="fas fa-home"></i> <?php echo $lang['done_success']; ?>
 	</div>
+    <div class="alert alert-info">
+		<h6 class="alert-heading"><i class="fab fa-google"></i> <?php echo $lang['recaptcha_title']; ?></h6>
+		<p><?php echo $lang['recaptcha_desc']; ?></p>
+		<hr>
+		<p class="mb-1">
+			<strong><?php echo $lang['recaptcha_key']; ?></strong><br>
+			<small><code style="word-wrap: break-word;">6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI</code></small>
+		</p>
+		<p class="mb-0">
+			<strong><?php echo $lang['recaptcha_secret']; ?></strong><br>
+			<small><code style="word-wrap: break-word;">6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe</code></small>
+		</p>
+	</div>   
 	<div class="alert alert-danger">
 		<i class="fas fa-exclamation-triangle"></i> <?php echo $lang['done_security_warning']; ?>
 	</div>

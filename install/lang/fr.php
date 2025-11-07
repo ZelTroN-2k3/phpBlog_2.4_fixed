@@ -38,6 +38,12 @@ $lang = [
     'done_security_warning' => 'Pour des raisons de sécurité, veuillez supprimer le dossier <b>install/</b> de votre serveur !',
     'done_continue' => 'Continuer vers phpBlog',
     'db_connect_error' => 'Erreur de connexion à la base de données ! Veuillez vérifier vos paramètres.',
-    'config_write_error' => 'Impossible d\'ouvrir le fichier de configuration pour enregistrer les informations'
+    'config_write_error' => 'Impossible d\'ouvrir le fichier de configuration pour enregistrer les informations',
+
+    // Infos reCAPTCHA
+    'recaptcha_title' => 'Informations reCAPTCHA (pour Localhost)',
+    'recaptcha_desc' => 'Pour votre commodité, des clés de test Google reCAPTCHA v2 ont été pré-installées. Elles ne fonctionneront que sur les domaines « localhost » ou « 127.0.0.1 ».',
+    'recaptcha_key' => 'Clé du Site :',
+    'recaptcha_secret' => 'Clé Secrète :'
 ];
 ?>

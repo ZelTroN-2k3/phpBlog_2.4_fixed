@@ -38,6 +38,12 @@ $lang = [
     'done_security_warning' => 'For security reasons, please remove the <b>install/</b> folder from your server!',
     'done_continue' => 'Continue to phpBlog',
     'db_connect_error' => 'Database connecting error! Please check your database connection parameters.',
-    'config_write_error' => 'Cannot open the configuration file to save the information'
+    'config_write_error' => 'Cannot open the configuration file to save the information',
+
+    // reCAPTCHA Info
+    'recaptcha_title' => 'reCAPTCHA Info (for Localhost)',
+    'recaptcha_desc' => 'For your convenience, Google reCAPTCHA v2 test keys have been pre-installed. They will only work on "localhost" or "127.0.0.1" domains.',
+    'recaptcha_key' => 'Site Key:',
+    'recaptcha_secret' => 'Secret Key:'
 ];
 ?>

@@ -153,7 +153,41 @@ CREATE TABLE IF NOT EXISTS `users` (
   `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'User'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
+
+-- -------------------------------------------------------
+
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL DEFAULT 1,
+  `site_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sitename` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gcaptcha_sitekey` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gcaptcha_secretkey` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `head_customcode` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `facebook` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `instagram` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `twitter` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `youtube` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `linkedin` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `comments` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rtl` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_format` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `layout` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `latestposts_bar` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sidebar_position` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `posts_per_row` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `theme` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `background_image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `settings` (`id`, `site_url`, `sitename`, `description`, `email`, `gcaptcha_sitekey`, `gcaptcha_secretkey`, `head_customcode`, `facebook`, `instagram`, `twitter`, `youtube`, `linkedin`, `comments`, `rtl`, `date_format`, `layout`, `latestposts_bar`, `sidebar_position`, `posts_per_row`, `theme`, `background_image`) VALUES
+(1, '', 'phpBlog', 'Content Management System', '', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe', 'IDwhLS0gR29vZ2xlIEFuYWx5dGljcyA0IChHQTQpIFRyYWNraW5nIENvZGUgLS0+DQogPHNjcmlwdCBhc3luYyBzcmM9Imh0dHBzOi8vd3d3Lmdvb2dsZXRhZ21hbmFnZXIuY29tL2d0YWcvanM/aWQ9Ry1YWFhYWFhYWFhYIj48L3NjcmlwdD4NCiA8c2NyaXB0Pg0KICAgd2luZG93LmRhdGFMYXllciA9IHdpbmRvdy5kYXRhTGF5ZXIgfHwgW107DQogICBmdW5jdGlvbiBndGFnKCl7ZGF0YUxheWVyLnB1c2goYXJndW1lbnRzKTt9DQogICBndGFnKCdqcycsIG5ldyBEYXRlKCkpOw0KICAgZ3RhZygnY29uZmlnJywgJ0ctWFhYWFhYWFhYWCcpOw0KIDwvc2NyaXB0Pg0KPCEtLSBSZXN0IG9mIHlvdXIgaGVhZCBjb250ZW50IC0tPg==', '', '', '', '', '', 'guests', 'No', 'd.m.Y', 'Boxed', 'Enabled', 'Right', '3', 'Bootstrap 5', '');
+-- ------------------------------------------------------
+
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `albums`
   ADD PRIMARY KEY (`id`);
