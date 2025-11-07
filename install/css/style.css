@@ -1,0 +1,45 @@
+body {
+    background-color: #f0f2f5; /* Fond gris clair */
+}
+.installer-card {
+    border-radius: 12px; /* Coins plus arrondis */
+    border: 0; /* Pas de bordure */
+}
+.installer-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+/* Style du "Stepper" (étapes) */
+.nav-tabs .nav-link {
+    border: 0;
+    color: #6c757d; /* Texte gris */
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 0 4px; /* Petit espacement */
+    font-weight: 500;
+}
+.nav-tabs .nav-link.active {
+    background-color: #0d6efd; /* Couleur primaire Bootstrap */
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.nav-tabs .nav-link.disabled {
+     background-color: #f8f9fa;
+     color: #adb5bd;
+}
+.nav-tabs .nav-link .step-icon {
+    margin-right: 8px;
+}
+/* Ajoute un espacement par défaut aux groupes de formulaire */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+.lang-flag {
+    width: 20px;            /* Définit une largeur fixe pour le drapeau */
+    height: auto;           /* Garde les proportions */
+    vertical-align: middle; /* Aligne l'image avec le milieu du texte */
+    margin-right: 5px;      /* Ajoute un petit espace entre le drapeau et le texte */
+    border-radius: 3px;     /* Optionnel : pour des coins légèrement arrondis */
+}
