@@ -51,7 +51,11 @@ include 'templates/header.php';
                 <?php endif; ?>
                 
                 <div class="post-body">
-                    <?php echo $post->content; ?>
+                    <?php 
+                    // Note: Content is not escaped as it may contain HTML formatting
+                    // Only admin users can create/edit posts, so this is safe
+                    echo $post->content; 
+                    ?>
                 </div>
             </article>
             

@@ -140,5 +140,29 @@ class Post {
         $row = $stmt->fetch();
         return $row['total'];
     }
+    
+    // Get posts by category
+    public function readByCategory($category_id, $limit = null, $offset = 0) {
+        $limitClause = $limit ? "LIMIT :limit OFFSET :offset" : "";
+        
+        $query = "SELECT p.*, u.username as author_name, c.name as category_name 
+                  FROM " . $this->table . " p
+                  LEFT JOIN users u ON p.author_id = u.id
+                  LEFT JOIN categories c ON p.category_id = c.id
+                  WHERE p.status = 'published' AND p.category_id = :category_id
+                  ORDER BY p.created_at DESC
+                  $limitClause";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+        
+        if ($limit) {
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
+        return $stmt;
+    }
 }
 ?>

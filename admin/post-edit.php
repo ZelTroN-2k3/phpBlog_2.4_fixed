@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <div class="form-group">
                         <label for="content">Content *</label>
-                        <textarea id="content" name="content" rows="15" required><?php echo htmlspecialchars($post->content); ?></textarea>
+                        <textarea id="content" name="content" rows="15" required><?php echo $post->content; ?></textarea>
                         <p class="help-text">You can use HTML tags for formatting</p>
                     </div>
                     

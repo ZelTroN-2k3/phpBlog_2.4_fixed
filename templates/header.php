@@ -16,7 +16,7 @@
             <nav>
                 <ul>
                     <li><a href="index.php">Home</a></li>
-                    <?php if (isset($categories)): 
+                    <?php if (isset($categories) && $categories): 
                         while ($cat = $categories->fetch()): ?>
                         <li><a href="category.php?id=<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></a></li>
                     <?php endwhile; endif; ?>

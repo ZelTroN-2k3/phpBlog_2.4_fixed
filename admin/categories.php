@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr>
                                             <td><?php echo htmlspecialchars($cat['name']); ?></td>
                                             <td><?php echo htmlspecialchars($cat['slug']); ?></td>
-                                            <td><?php echo htmlspecialchars($cat['description'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($cat['description'] ?: ''); ?></td>
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>

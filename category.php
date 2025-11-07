@@ -24,17 +24,8 @@ $category = new Category($db);
 // Get categories for navigation
 $categories = $category->read();
 
-// Get category posts
-$query = "SELECT p.*, u.username as author_name, c.name as category_name 
-          FROM posts p
-          LEFT JOIN users u ON p.author_id = u.id
-          LEFT JOIN categories c ON p.category_id = c.id
-          WHERE p.status = 'published' AND p.category_id = :category_id
-          ORDER BY p.created_at DESC";
-
-$stmt = $db->prepare($query);
-$stmt->bindParam(':category_id', $category_id);
-$stmt->execute();
+// Get category posts using the new method
+$posts = $post->readByCategory($category_id);
 
 // Get category name
 $cat_query = "SELECT name FROM categories WHERE id = :id";
@@ -58,8 +49,8 @@ include 'templates/header.php';
                     Category: <?php echo htmlspecialchars($category_info['name']); ?>
                 </h1>
                 
-                <?php if ($stmt->rowCount() > 0): ?>
-                    <?php while ($row = $stmt->fetch()): ?>
+                <?php if ($posts->rowCount() > 0): ?>
+                    <?php while ($row = $posts->fetch()): ?>
                         <article class="post">
                             <?php if ($row['featured_image']): ?>
                                 <div class="post-image">
