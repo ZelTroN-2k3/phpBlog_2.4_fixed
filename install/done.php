@@ -8,7 +8,7 @@ $database_password = $_SESSION['database_password'];
 $database_name     = $_SESSION['database_name'];
 $username          = $_SESSION['username'];
 $email             = $_SESSION['email'];
-$password          = hash('sha256', $_SESSION['password']);
+$password          = password_hash($_SESSION['password'], PASSWORD_DEFAULT);
 
 if (isset($_SERVER['HTTPS'])) {
     $htp = 'https';

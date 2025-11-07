@@ -23,7 +23,7 @@ if (isset($_POST['save'])) {
     $email    = $_POST['email'];
     $username = $_POST['username'];
     $avatar   = $rowu['avatar'];
-    $password = $_POST['password'];
+    $password = hash('sha256', $_POST['password']);
     
     $emused = 'No';
     
@@ -63,14 +63,16 @@ if (isset($_POST['save'])) {
     }
     
     if (filter_var($email, FILTER_VALIDATE_EMAIL) && $emused == 'No') {
-        
-        if ($password != null) {
-            $password = hash('sha256', $_POST['password']);
-            $querysd  = mysqli_query($connect, "UPDATE `users` SET email='$email', username='$username', avatar='$avatar', password='$password' WHERE id='$user_id'");
+
+        // Vérifier si un nouveau mot de passe a été saisi
+        if (!empty($password_post)) {
+            // Hacher le NOUVEAU mot de passe
+            $password_hashed = password_hash($password_post, PASSWORD_DEFAULT);
+            $querysd = mysqli_query($connect, "UPDATE `users` SET email='$email', username='$username', avatar='$avatar', password='$password_hashed' WHERE id='$user_id'");
         } else {
+            // Ne pas mettre à jour le mot de passe s'il est vide
             $querysd = mysqli_query($connect, "UPDATE `users` SET email='$email', username='$username', avatar='$avatar' WHERE id='$user_id'");
         }
-        
     }
     
     echo '<meta http-equiv="refresh" content="0;url=profile">';

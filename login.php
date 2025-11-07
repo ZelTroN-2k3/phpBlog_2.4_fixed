@@ -24,14 +24,32 @@ $error = 0;
 <?php
 if (isset($_POST['signin'])) {
     $username = mysqli_real_escape_string($connect, $_POST['username']);
-    $password = hash('sha256', $_POST['password']);
-    $check    = mysqli_query($connect, "SELECT username, password FROM `users` WHERE `username`='$username' AND password='$password'");
+    $password_post = $_POST['password'];
+
+    // 1. Récupérer l'utilisateur par son nom d'utilisateur
+    $check = mysqli_query($connect, "SELECT * FROM `users` WHERE `username`='$username'");
+
     if (mysqli_num_rows($check) > 0) {
-        $_SESSION['sec-username'] = $username;
-        echo '<meta http-equiv="refresh" content="0; url=' . $settings['site_url'] . '">';
+        $row = mysqli_fetch_assoc($check);
+        $hashed_password_from_db = $row['password'];
+
+        // 2. Vérifier le mot de passe en utilisant password_verify
+        if (password_verify($password_post, $hashed_password_from_db)) {
+            // Le mot de passe est correct !
+            $_SESSION['sec-username'] = $username;
+            echo '<meta http-equiv="refresh" content="0; url=' . $settings['site_url'] . '">';
+        } else {
+            // Le mot de passe est incorrect
+            echo '
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> The entered <strong>Username</strong> or <strong>Password</strong> is incorrect.
+            </div>';
+            $error = 1;
+        }
     } else {
+        // L'utilisateur n'existe pas
         echo '
-		<div class="alert alert-danger">
+        <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> The entered <strong>Username</strong> or <strong>Password</strong> is incorrect.
         </div>';
         $error = 1;
@@ -67,7 +85,7 @@ if ($error == 1) {
                 <?php
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
-    $password = hash('sha256', $_POST['password']);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $email    = $_POST['email'];
     $captcha  = '';
     if (isset($_POST['g-recaptcha-response'])) {

@@ -27,10 +27,21 @@ if (isset($_GET['edit-id'])) {
 		exit;
     }
 	
-	if (isset($_POST['edit'])) {
+    if (isset($_POST['edit'])) {
 		$role = $_POST['role'];
+		$password_post = $_POST['password']; // Récupère le champ du nouveau mot de passe
+
+        // Vérifie si un nouveau mot de passe a été fourni
+        if (!empty($password_post)) {
+            // Si oui, hache le nouveau mot de passe
+            $password_hashed = password_hash($password_post, PASSWORD_DEFAULT);
+            // Met à jour le rôle ET le mot de passe
+            $query = mysqli_query($connect, "UPDATE `users` SET role='$role', password='$password_hashed' WHERE id='$id'");
+        } else {
+            // Si non, ne met à jour que le rôle
+            $query = mysqli_query($connect, "UPDATE `users` SET role='$role' WHERE id='$id'");
+        }
         
-		$query = mysqli_query($connect, "UPDATE `users` SET role='$role' WHERE id='$id'");
 		echo '<meta http-equiv="refresh" content="0;url=users.php">';
 	}
 ?>
@@ -50,6 +61,10 @@ if (isset($_GET['edit-id'])) {
     echo $row['email'];
 ?>" readonly disabled>
 						</div><br />
+                        <div class="form-group">
+							<label class="control-label">New Password: </label>
+							<input type="password" name="password" class="form-control" placeholder="Fill only to change password">
+						</div><br />                        
 						<div class="form-group">
 							<label class="control-label">Role: </label><br />
 							<select name="role" class="form-select" required>
