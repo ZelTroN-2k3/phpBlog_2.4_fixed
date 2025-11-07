@@ -1,0 +1,30 @@
+# phpBlog .gitignore
+
+# Uploaded files
+uploads/*
+!uploads/.gitkeep
+
+# Configuration (if contains sensitive data)
+# config.php
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Database backups
+*.sql.backup
