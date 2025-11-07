@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /uploads/
+Disallow: /config.php
+Disallow: /database.sql
+
+Allow: /assets/
+Allow: /index.php
+Allow: /post.php
+Allow: /category.php
+
+Sitemap: http://localhost/sitemap.xml
