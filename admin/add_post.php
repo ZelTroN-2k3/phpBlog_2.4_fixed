@@ -7,9 +7,37 @@ if (isset($_POST['add'])) {
     $active      = addslashes($_POST['active']);
 	$featured    = addslashes($_POST['featured']);
     $category_id = addslashes($_POST['category_id']);
-    $content     = htmlspecialchars($_POST['content']);
-    $date        = date($settings['date_format']);
-    $time        = date('H:i');
+    $tags_input  = addslashes($_POST['tags']); // Récupère la chaîne de tags    
+    $content     = addslashes($_POST['content']);
+    
+// DÉBUT DE LA MODIFICATION - Logique de planification
+    $publish_datetime_input = $_POST['publish_datetime']; // ex: 2025-11-10T14:30
+    
+    if (!empty($publish_datetime_input)) {
+        // L'utilisateur a choisi une date future (ou spécifique)
+        $publish_timestamp = strtotime($publish_datetime_input);
+        
+        // 1. Pour la nouvelle colonne DATETIME (pour le filtrage SQL)
+        // ON AJOUTE LES GUILLEMETS pour la requête
+        $publish_datetime_sql = "'" . date('Y-m-d H:i:s', $publish_timestamp) . "'";
+        
+        // 2. Pour les anciennes colonnes VARCHAR (pour l'affichage)
+        $date = date($settings['date_format'], $publish_timestamp);
+        $time = date('H:i', $publish_timestamp);
+        
+    } else {
+        // L'utilisateur publie maintenant (comportement par défaut)
+        $current_timestamp = time();
+        
+        // 1. Pour la nouvelle colonne DATETIME (pour le filtrage SQL)
+        // ON UTILISE NOW() directement dans la requête
+        $publish_datetime_sql = "NOW()";
+        
+        // 2. Pour les anciennes colonnes VARCHAR (pour l'affichage)
+        $date = date($settings['date_format'], $current_timestamp);
+        $time = date('H:i', $current_timestamp);
+    }
+    // FIN DE LA MODIFICATION
     
 	$author     = $uname;
 	$auth_query = mysqli_query($connect, "SELECT id FROM `users` WHERE username = '$author' LIMIT 1");
@@ -49,16 +77,66 @@ if (isset($_POST['add'])) {
 	   }
     }
     
-    $add_sql = mysqli_query($connect, "INSERT INTO `posts` (category_id, title, slug, author_id, image, content, date, time, active, featured) 
-									   VALUES ('$category_id', '$title', '$slug', '$author_id', '$image', '$content', '$date', '$time', '$active', '$featured')");
+$add_sql = mysqli_query($connect, "INSERT INTO `posts` (category_id, title, slug, author_id, publish_datetime, image, content, date, time, active, featured) 
+									   VALUES ('$category_id', '$title', '$slug', '$author_id', $publish_datetime_sql, '$image', '$content', '$date', '$time', '$active', '$featured')");
+
+// DÉBUT DE L'AJOUT - Logique des Tags
     
+    // 1. Récupérer l'ID du post qui vient d'être créé
+    $new_post_id = mysqli_insert_id($connect);
+    
+    // 2. Traiter la chaîne de tags s'il y en a une
+    if (!empty($tags_input)) {
+        
+        // Sépare la chaîne en un tableau (ex: "php, cms" -> ['php', 'cms'])
+        $tags_array = explode(',', $tags_input);
+        
+        foreach ($tags_array as $tag_name) {
+            
+            // Nettoyer le nom du tag (supprimer les espaces avant/après)
+            $tag_name = trim($tag_name);
+            
+            if (!empty($tag_name)) {
+                
+                // Créer un slug pour le tag (ex: "PHP Facile" -> "php-facile")
+                // On utilise la fonction generateSeoURL qui existe déjà dans ce fichier
+                $tag_slug = generateSeoURL($tag_name);
+                
+                // 3. Vérifier si le tag existe déjà dans la table `tags`
+                $check_tag_sql = "SELECT tag_id FROM `tags` WHERE tag_slug = '$tag_slug' LIMIT 1";
+                $check_tag_query = mysqli_query($connect, $check_tag_sql);
+                
+                if (mysqli_num_rows($check_tag_query) > 0) {
+                    // Le tag existe : on récupère son ID
+                    $existing_tag = mysqli_fetch_assoc($check_tag_query);
+                    $tag_id = $existing_tag['tag_id'];
+                } else {
+                    // Le tag n'existe pas : on l'insère dans la table `tags`
+                    $insert_tag_sql = "INSERT INTO `tags` (tag_name, tag_slug) VALUES ('$tag_name', '$tag_slug')";
+                    mysqli_query($connect, $insert_tag_sql);
+                    
+                    // On récupère le nouvel ID créé
+                    $tag_id = mysqli_insert_id($connect);
+                }
+                
+                // 4. Insérer l'association dans la table pivot `post_tags`
+                if ($new_post_id > 0 && $tag_id > 0) {
+                    $insert_post_tag_sql = "INSERT INTO `post_tags` (post_id, tag_id) VALUES ('$new_post_id', '$tag_id')";
+                    mysqli_query($connect, $insert_post_tag_sql);
+                }
+            }
+        }
+    }
+    // FIN DE L'AJOUT - Logique des Tags
+
     $from     = $settings['email'];
     $sitename = $settings['sitename'];
 	
-    $run3 = mysqli_query($connect, "SELECT * FROM `posts` WHERE title='$title'");
-    $row3 = mysqli_fetch_assoc($run3);
-    $id3  = $row3['id'];
-	
+    //$run3 = mysqli_query($connect, "SELECT * FROM `posts` WHERE title='$title'");
+    //$row3 = mysqli_fetch_assoc($run3);
+    //$id3  = $row3['id'];
+	$id3 = $new_post_id;
+    
     $run2 = mysqli_query($connect, "SELECT * FROM `newsletter`");
     while ($row = mysqli_fetch_assoc($run2)) {
 
@@ -133,9 +211,20 @@ while ($rw = mysqli_fetch_assoc($crun)) {
 									';
 }
 ?>
-						</select>
+</select>
 					</p>
-					<p>
+                    
+                    <p>
+						<label>Tags</label>
+						<input class="form-control" name="tags" value="" type="text" placeholder="php, blog, cms, ...">
+						<i>Séparez les tags par une virgule ( , ).</i>
+					</p>
+                    <p>
+						<label>Date de Publication (Optionnel)</label>
+						<input class="form-control" name="publish_datetime" type="datetime-local">
+						<i>Laissez vide pour publier immédiatement.</i>
+					</p>                    
+                    <p>
 						<label>Content</label>
 						<textarea class="form-control" id="summernote" rows="8" name="content" required></textarea>
 					</p>

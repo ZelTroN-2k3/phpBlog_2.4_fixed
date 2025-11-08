@@ -195,29 +195,29 @@ if ($cmnts == "0") {
             
             echo '
 				<div class="col-md-2">
-					<img src="../' . $avatar . '" class="dashboard-member-activity-avatar" />
+					<img class="rounded-circle shadow-1-strong me-2" src="../' . $avatar . '" width="60" height="60" class="dashboard-member-activity-avatar" />
                 </div>
 				<div class="col-md-10">
 					<a href="comments.php?edit-id=' . $row['id'] . '">
 						<span class="blue">Comment by <strong>' . $author . ' </strong> on <strong>' . date($settings['date_format'], strtotime($row['date'])) . ', ' . $row['time'] . '</strong></span>
 					</a><br />
-';
-            if ($row['approved'] == "Yes") {
-                echo '<strong>Status:</strong> <span class="badge bg-success">Approved</span> ';
-            } else {
-                echo '<strong>Status:</strong> <span class="badge bg-warning">Pending</span> ';
-            }
-            if ($row['guest'] == "Yes") {
-                echo '<span class="badge bg-info"><i class="fas fa-user"></i> Guest</span> ';
-            }
-            echo '
-                    <p>' . short_text($row['comment'], 100) . '</p>
-				</div>
-';
-        }
-    }
-}
-?>
+                            ';
+                                        if ($row['approved'] == "Yes") {
+                                            echo '<strong>Status:</strong> <span class="badge bg-success">Approved</span> ';
+                                        } else {
+                                            echo '<strong>Status:</strong> <span class="badge bg-warning">Pending</span> ';
+                                        }
+                                        if ($row['guest'] == "Yes") {
+                                            echo '<span class="badge bg-info"><i class="fas fa-user"></i> Guest</span> ';
+                                        }
+                                        echo '
+                                                <p>' . short_text($row['comment'], 100) . '</p>
+                                            </div>
+                            ';
+                                    }
+                                }
+                            }
+                            ?>
                     </div>
                   </div>
               </div>

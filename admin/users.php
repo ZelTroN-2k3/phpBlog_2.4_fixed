@@ -14,7 +14,84 @@ if (isset($_GET['delete-id'])) {
 	</div>
 	
 <?php
-if (isset($_GET['edit-id'])) {
+// ====================================================================================
+// --- NOUVEAU BLOC : AJOUTER UN UTILISATEUR (FORMULAIRE) ---
+// ====================================================================================
+if (isset($_GET['add'])) {
+	
+    if (isset($_POST['add_user'])) {
+		$username = addslashes($_POST['username']);
+		$email    = addslashes($_POST['email']);
+		$password = $_POST['password']; // Sera haché, pas besoin de addslashes
+		$role     = addslashes($_POST['role']);
+
+		$error = '';
+		
+		// Validation simple
+		if (empty($username) || empty($email) || empty($password) || empty($role)) {
+			$error = '<div class="alert alert-danger">Tous les champs sont requis.</div>';
+		} else {
+			// Vérifier les doublons
+			$check_sql = mysqli_query($connect, "SELECT * FROM `users` WHERE username='$username' OR email='$email'");
+			if (mysqli_num_rows($check_sql) > 0) {
+				$error = '<div class="alert alert-danger">Ce nom d\'utilisateur ou cet e-mail existe déjà.</div>';
+			}
+		}
+		
+		// S'il n'y a pas d'erreur, on insère
+		if ($error == '') {
+			$password_hashed = password_hash($password, PASSWORD_DEFAULT);
+			
+			// Note : 'avatar' est défini par défaut
+			$insert_sql = mysqli_query($connect, "INSERT INTO `users` (username, email, password, role) VALUES ('$username', '$email', '$password_hashed', '$role')");
+			
+			if ($insert_sql) {
+				echo '<meta http-equiv="refresh" content="0;url=users.php">';
+				exit;
+			} else {
+				$error = '<div class="alert alert-danger">Erreur de base de données. L\'utilisateur n\'a pas pu être ajouté.</div>';
+			}
+		}
+	}
+?>
+			<div class="card mb-3">
+              <h6 class="card-header">Add New User</h6>         
+                  <div class="card-body">
+				  
+					<?php if (!empty($error)) { echo $error; } // Affiche les erreurs ici ?>
+				  
+                    <form action="users.php?add=1" method="post">
+						<div class="form-group">
+							<label class="control-label">Username: </label>
+							<input type="text" name="username" class="form-control" value="" required>
+						</div><br />
+						<div class="form-group">
+							<label class="control-label">E-Mail Address: </label>
+								<input type="email" name="email" class="form-control" value="" required>
+						</div><br />
+                        <div class="form-group">
+							<label class="control-label">Password: </label>
+							<input type="password" name="password" class="form-control" required>
+						</div><br />                        
+						<div class="form-group">
+							<label class="control-label">Role: </label><br />
+							<select name="role" class="form-select" required>
+								<option value="User" selected>User</option>
+                                <option value="Editor">Editor</option>
+								<option value="Admin">Administrator</option>
+                            </select><br />
+						</div>
+						<div class="form-actions">
+                            <input type="submit" name="add_user" class="btn btn-success col-12" value="Add User" />
+                        </div>
+					</form>
+                  </div>
+            </div>
+<?php
+// ====================================================================================
+// --- BLOC EXISTANT : MODIFIER UN UTILISATEUR (FORMULAIRE) ---
+// ====================================================================================
+} else if (isset($_GET['edit-id'])) {
     $id  = (int) $_GET["edit-id"];
     $sql = mysqli_query($connect, "SELECT * FROM `users` WHERE id = '$id'");
     $row = mysqli_fetch_assoc($sql);
@@ -92,8 +169,12 @@ if (isset($_GET['edit-id'])) {
                   </div>
             </div>
 <?php
-}
+// ====================================================================================
+// --- BLOC EXISTANT : LISTE DES UTILISATEURS ---
+// ====================================================================================
+} else {
 ?>
+			<a href="users.php?add=1" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Add User</a>
 
 			<div class="card">
               <h6 class="card-header">Users</h6>         
@@ -142,6 +223,9 @@ while ($row = mysqli_fetch_assoc($query)) {
                      </table>
                   </div>
             </div>
+<?php
+} // Fin du "else" pour la liste
+?>
 			
 <script>
 $(document).ready(function() {

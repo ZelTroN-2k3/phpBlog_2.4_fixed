@@ -304,13 +304,13 @@ function head()
 		echo '
 		<meta property="og:title" content="' . $rowpt['title'] . '" />
 		<meta property="og:description" content="' . short_text(strip_tags(html_entity_decode($rowpt['content'])), 150) . '" />
-		<meta property="og:image" content="' . $rowpt['image'] . '" />
+		<meta property="og:image" content="' . $settings['site_url'] . '/' . $rowpt['image'] . '" />
 		<meta property="og:type" content="article"/>
 		<meta property="og:url" content="' . $settings['site_url'] . '/post?name=' . $rowpt['slug'] . '" />
 		<meta name="twitter:card" content="summary_large_image"></meta>
 		<meta name="twitter:title" content="' . $rowpt['title'] . '" />
 		<meta name="twitter:description" content="' . short_text(strip_tags(html_entity_decode($rowpt['content'])), 150) . '" />
-		<meta name="twitter:image" content="' . $rowpt['image'] . '" />
+		<meta name="twitter:image" content="' . $settings['site_url'] . '/' . $rowpt['image'] . '" />
 		<meta name="twitter:url" content="' . $settings['site_url'] . '/post?name=' . $rowpt['slug'] . '" />
 		';
 		
@@ -720,7 +720,7 @@ if ($settings['layout'] == 'Wide') {
                 <marquee behavior="scroll" direction="right" scrollamount="6">
                     
 <?php
-$run   = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' ORDER BY id DESC LIMIT 6");
+$run   = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' AND publish_datetime <= NOW() ORDER BY id DESC LIMIT 6");
 $count = mysqli_num_rows($run);
 if ($count <= 0) {
     echo 'There are no published posts';
@@ -779,7 +779,7 @@ function sidebar() {
     $runq = mysqli_query($connect, "SELECT * FROM `categories` ORDER BY category ASC");
     while ($row = mysqli_fetch_assoc($runq)) {
         $category_id = $row['id'];
-        $postc_query = mysqli_query($connect, "SELECT id FROM `posts` WHERE category_id = '$category_id' AND active = 'Yes'");
+        $postc_query = mysqli_query($connect, "SELECT id FROM `posts` WHERE category_id = '$category_id' AND active = 'Yes' AND publish_datetime <= NOW()");
 		$posts_count = mysqli_num_rows($postc_query);
         echo '
 							<a href="category?name=' . $row['slug'] . '">
@@ -814,7 +814,7 @@ function sidebar() {
 						<div class="tab-content">
 							<div id="popular" class="tab-pane fade show active">
 <?php
-    $run   = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' ORDER BY views, id DESC LIMIT 4");
+    $run   = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' AND publish_datetime <= NOW() ORDER BY views, id DESC LIMIT 4");
     $count = mysqli_num_rows($run);
     if ($count <= 0) {
         echo '<div class="alert alert-info">There are no published posts</div>';
@@ -878,7 +878,7 @@ function sidebar() {
                 }
             }
 			
-            $query2 = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' AND id='$row[post_id]'");
+            $query2 = mysqli_query($connect, "SELECT * FROM `posts` WHERE active='Yes' AND publish_datetime <= NOW() AND id='$row[post_id]'");
             while ($row2 = mysqli_fetch_array($query2)) {
 				echo '
 								<div class="mb-2 d-flex flex-start align-items-center bg-light rounded border">

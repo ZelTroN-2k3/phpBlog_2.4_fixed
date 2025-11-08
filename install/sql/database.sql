@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS `pages`;
 DROP TABLE IF EXISTS `posts`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `widgets`;
+DROP TABLE IF EXISTS `tags`;
+DROP TABLE IF EXISTS `post_tags`;
 
 -- --------------------------------------------------------
 
@@ -37,6 +39,7 @@ INSERT INTO `categories` (`id`, `category`, `slug`) VALUES
 CREATE TABLE IF NOT EXISTS `comments` (
   `id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT 0, 
   `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -123,6 +126,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `author_id` int(11) NOT NULL DEFAULT 1,
+  `publish_datetime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- LIGNE AJOUTÉE
   `date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `time` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Yes',
@@ -184,7 +188,23 @@ CREATE TABLE `settings` (
 
 INSERT INTO `settings` (`id`, `site_url`, `sitename`, `description`, `email`, `gcaptcha_sitekey`, `gcaptcha_secretkey`, `head_customcode`, `facebook`, `instagram`, `twitter`, `youtube`, `linkedin`, `comments`, `rtl`, `date_format`, `layout`, `latestposts_bar`, `sidebar_position`, `posts_per_row`, `theme`, `background_image`) VALUES
 (1, '', 'phpBlog', 'Content Management System', '', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe', 'IDwhLS0gR29vZ2xlIEFuYWx5dGljcyA0IChHQTQpIFRyYWNraW5nIENvZGUgLS0+DQogPHNjcmlwdCBhc3luYyBzcmM9Imh0dHBzOi8vd3d3Lmdvb2dsZXRhZ21hbmFnZXIuY29tL2d0YWcvanM/aWQ9Ry1YWFhYWFhYWFhYIj48L3NjcmlwdD4NCiA8c2NyaXB0Pg0KICAgd2luZG93LmRhdGFMYXllciA9IHdpbmRvdy5kYXRhTGF5ZXIgfHwgW107DQogICBmdW5jdGlvbiBndGFnKCl7ZGF0YUxheWVyLnB1c2goYXJndW1lbnRzKTt9DQogICBndGFnKCdqcycsIG5ldyBEYXRlKCkpOw0KICAgZ3RhZygnY29uZmlnJywgJ0ctWFhYWFhYWFhYWCcpOw0KIDwvc2NyaXB0Pg0KPCEtLSBSZXN0IG9mIHlvdXIgaGVhZCBjb250ZW50IC0tPg==', '', '', '', '', '', 'guests', 'No', 'd.m.Y', 'Boxed', 'Enabled', 'Right', '3', 'Bootstrap 5', '');
--- ------------------------------------------------------
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tags` (
+  `tag_id` int(11) NOT NULL,
+  `tag_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag_slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `post_tags` (
+  `post_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`id`);
@@ -219,11 +239,21 @@ ALTER TABLE `pages`
 ALTER TABLE `posts`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `posts`
+  ADD KEY `idx_publish_datetime` (`publish_datetime`);
+  
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `widgets`
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`tag_id`),
+  ADD UNIQUE KEY `tag_slug` (`tag_slug`);
+  
+ALTER TABLE `post_tags`
+  ADD PRIMARY KEY (`post_id`,`tag_id`);
 
 ALTER TABLE `albums`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
@@ -260,4 +290,8 @@ ALTER TABLE `users`
 
 ALTER TABLE `widgets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+
+ALTER TABLE `tags`
+  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
